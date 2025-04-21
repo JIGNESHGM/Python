@@ -1,0 +1,1 @@
+'All animals in new zoo are', new_zoo
