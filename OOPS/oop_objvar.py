@@ -22,7 +22,7 @@ class Robot:
         
 droidl = Robot("R2-D2")
 droidl.say_hi()
-Robot.how_many()
+droidl.how_many()
 
 droid2 = Robot("C-3PO")
 droid2.say_hi()
