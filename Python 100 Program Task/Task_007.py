@@ -20,3 +20,28 @@
 # question, it should be assumed to be a console input
 # in a comma-separated form.
 
+
+# Main function Declaration
+
+def main(row, col):
+    # List comprehension to create a 2D array
+    arr = []
+    
+    # Column loop
+    for i in range(row):
+        # Creating a row in Lambda function
+        # and appending it to the array
+        arr.append([i * j for j in range(col)])
+    # Returning the 2D array
+    return arr
+
+# Main function Execution
+if __name__ == '__main__':
+    try:
+        # Taking input from user
+        row = int(input('Enter no of ROWS: '))
+        col = int(input('Enter no of COLS: '))
+        # Printing the 2D array
+        print(main(row, col))
+    except ValueError:
+        print('Check value')
