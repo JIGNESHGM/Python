@@ -29,9 +29,13 @@ def main(row, col):
     
     # Column loop
     for i in range(row):
-        # Creating a row in Lambda function
+        
         # and appending it to the array
-        arr.append([i * j for j in range(col)])
+        row_data = []
+        
+        for j in range(col):
+            row_data.append(i * j)
+        arr.append(row_data)
     # Returning the 2D array
     return arr
 
@@ -39,9 +43,13 @@ def main(row, col):
 if __name__ == '__main__':
     try:
         # Taking input from user
-        row = int(input('Enter no of ROWS: '))
-        col = int(input('Enter no of COLS: '))
+        row = int(input('Enter no of Rows: '))
+        col = int(input('Enter no of Cols: '))
+        
         # Printing the 2D array
         print(main(row, col))
+    
+    # Handling ValueError
     except ValueError:
         print('Check value')
+
