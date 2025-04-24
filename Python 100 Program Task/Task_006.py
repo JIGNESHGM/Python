@@ -35,21 +35,10 @@ H = 30
 
 # Function to calculate Q
 def calculate_q(d_values):
-    """
-    Calculate the value of Q for a given list of D values using the formula:
-        Q = √((2 * C * D) / H)
-    where C and H are constants.
 
-    Parameters:
-    d_values (list of int): A list of integer values representing D.
-
-    Returns:
-    list of int: A list of integers representing the calculated Q values, rounded to the nearest whole number.
-
-    Note:
-    - The constants C and H must be defined in the global scope for this function to work.
-    - The `math` module must be imported to use the `math.sqrt` function.
-    """
+    # Calculate Q for each D value
+    # using the formula Q = sqrt((2 * C * D) / H)
+    # and round it to the nearest integer
     result = []
     for d in d_values:
         q = math.sqrt((2 * C * d) / H)
