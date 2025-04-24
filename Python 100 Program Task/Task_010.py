@@ -17,3 +17,33 @@
 # We use set container to remove duplicated data automatically and then
 # use sorted() to sort the data.
 
+
+# Main Function Declaration and Logic
+
+def main(sentence):
+    # Split the sentence into words
+    words = list(set(sentence.split(" ")))
+    
+    # Sort the words alphanumerically
+    words.sort()
+    
+    # Join the words back into a single string
+    return " ".join(words)
+
+# Main Function Call
+if __name__ == "__main__":
+    try:
+        # Input from the user
+        sentence = input("Enter a sentence: ")
+        
+        # Calling the main function
+        result = main(sentence)
+        
+        # Print the result
+        print(result)
+    
+    # Handle exceptions
+    except ValueError:
+        print("Check Input")
+    except Exception as e:
+        print(f"An error occurred: {e}")
