@@ -14,27 +14,28 @@
 
 # Function to calculate the value of a+aa+aaa+aaaa
 
-def calculate_value(a):
-    
-    # Calculate the value of a+aa+aaa+aaaa
+def calculate_value(a, n):
+    # Calculate the value of a + aa + aaa + ... (n times)
     result = 0
-    for i in range(1, 5):
+    for i in range(1, n + 1):
         result += int(a * i)
     return result
 
-# Main Funcation
+# Main Function
 
 def main():
-    
     # Input from user
     a = input("Enter a digit: ")
+    n = int(input("Enter the number of terms: "))
     
     # Call the function to calculate the value
-    result = calculate_value(a)
+    result = calculate_value(a, n)
+    
+    # Generate the sequence for display
+    sequence = " + ".join([a * i for i in range(1, n + 1)])
     
     # Print the result
-    print(f"The value of {a} + {a*2} + {a*3} + {a*4} is: {result}")
-    
+    print(f"The value of {sequence} is: {result}")
     
 # Call the main function
 if __name__ == "__main__":
