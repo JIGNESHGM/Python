@@ -19,9 +19,6 @@ def print_builtin_docs():
         # print the function name and its documentation
         print(f"{func.__name__} documentation: {func.__doc__}\n")
     
-# Function to print the documentation of a custom function
-def custom_function():
-    """This is a custom function that does nothing."""
-    pass
+
 # Print the documentation of built-in functions
 print_builtin_docs()
