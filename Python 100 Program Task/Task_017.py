@@ -21,6 +21,7 @@
 
 
 # Function to calculate net amount based on transactions with error handling
+@staticmethod
 def net_amount():
    
     # Initialize the net amount to 0
@@ -88,6 +89,7 @@ def net_amount():
             print(f"An error occurred: {e}. Please try again.")
 
 # Create a main function to call the net_amount function
+@staticmethod
 def main():
     net_amount()
 
