@@ -16,31 +16,30 @@
 # assumed to be a console input.
 
 
+# Funcation declaration in convert string in Capital
+
+def convert_to_uppercase(sentence):
+    
+    # convert each Sentance to uppercase 
+    uppur_case = sentence.upper()
+    # Return result 
+    
+    return uppur_case
+
 # Main Funcation Declaration
 
-def main():
-    # Prompt user for input
-    print("Enter Lines of text (type 'exit' to finish):")
-    
-    # Initialize an empty list to store lines
-    lines = []
-    
-    # Loop to read lines until 'exit' is entered
-    while True:
-        lines.append(input())
-        if lines[-1].lower() == 'exit':
-            break
-        
-    
-    # Print each line in uppercase
-    print("\nUppercase Lines:")
-    
-    for line in lines:
-        if line.lower() == 'exit':
-            break
-        print(line.upper())
-        
 
-# Main function call
+def main():
+    setance = str(input("Enter a setance : "))
+    
+    # Funcation call In uppercase
+    result = convert_to_uppercase(setance)
+    
+    # Print the result
+    print(result)
+    
+
 if __name__ == "__main__":
+    # Main function call
     main()
+    
