@@ -22,8 +22,10 @@ def main():
     # User input insert
     num1 = int(input("Enter Number 1 : "))
     num2 = int(input("Enter Number 2 : "))
+    
     # Call the compute_sum function and store the result
     result = compute_sum(num1, num2)
+    
     # Print the result
     print(f"The sum of {num1} and {num2} is: {result}")
     
