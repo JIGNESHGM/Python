@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <div class="probability-circle mb-3" 
+                         style="background-color: {% if approved %}rgba(76, 201, 240, 0.2){% else %}rgba(247, 37, 133, 0.2){% endif %};
+                                color: {% if approved %}var(--success-color){% else %}var(--danger-color){% endif %}">
+                        {{ probability }}%
+                    </div>
+                    
+                    <h2 class="mb-3">Application {% if approved %}Approved{% else %}Denied{% endif %}</h2>
+                    
+                    {% if approved %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Congratulations! Your application has been approved.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            We regret to inform you that your application has been denied.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="progress mt-4 mb-4" style="height: 10px;">
+                        <div class="progress-bar {% if approved %}bg-success{% else %}bg-danger{% endif %}" 
+                             role="progressbar" 
+                             style="width: {{ probability }}%" 
+                             aria-valuenow="{{ probability }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    
+                    <a href="/" class="btn btn-primary mt-3">
+                        <i class="fas fa-undo me-2"></i>Start New Application
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

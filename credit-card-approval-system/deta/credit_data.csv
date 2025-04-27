@@ -1,0 +1,16 @@
+income,credit_score,employment,debt,age,approved
+65000,720,employed,12000,35,1
+32000,580,unemployed,18000,28,0
+88000,790,employed,8000,42,1
+45000,680,employed,15000,31,1
+52000,710,employed,9000,38,1
+28000,590,unemployed,20000,25,0
+75000,750,employed,10000,45,1
+38000,630,employed,17000,29,0
+92000,810,employed,5000,50,1
+41000,650,unemployed,16000,33,0
+58000,690,employed,11000,36,1
+33000,600,unemployed,19000,27,0
+69000,730,employed,9500,40,1
+49000,670,employed,13000,34,1
+36000,620,unemployed,21000,30,0

@@ -56,7 +56,7 @@ def main():
 
         # If input is empty, show message and exit
         if not passwords_input:
-            print("❌ No input received. Please enter at least one password.")
+            print("No input received. Please enter at least one password.")
             return
 
         # Split the input string into individual passwords and remove extra spaces
@@ -75,19 +75,19 @@ def main():
                 valid_passwords.append(password)
             else:
                 # If invalid, print error message with reason
-                print(f"❌ '{password}': {message}")
+                print(f" '{password}': {message}")
 
         # If any valid passwords found, print them
         if valid_passwords:
-            print("\n✅ Valid password(s):")
+            print("\n Valid password(s):")
             print(", ".join(valid_passwords))  # Join the list with commas
         else:
             # If no valid passwords found
-            print("\n⚠️ No valid passwords found.")
+            print("\n No valid passwords found.")
 
     # Catch and print any unexpected errors
     except Exception as e:
-        print(f"⚠️ An error occurred: {e}")
+        print(f" An error occurred: {e}")
 
 # Call the main function to execute the program
 if __name__ == "__main__":
