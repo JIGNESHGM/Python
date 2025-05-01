@@ -18,3 +18,21 @@
 
 # Hints:
 # Use re.findall() to find all substring using regex.
+
+# Function to find all words composed of digits only
+def find_digit_words(input_string):
+    import re
+    # Use regex to find all words composed of digits only
+    return re.findall(r'\b\d+\b', input_string)
+
+# Main function to test the find_digit_words function
+def main():
+    # Input string from the user
+    input_string = input("Enter a sequence of words separated by whitespace: ")
+    
+    digit_words = find_digit_words(input_string)
+    print(digit_words)
+    
+# Call the main function to execute the program
+if __name__ == "__main__":
+    main()
