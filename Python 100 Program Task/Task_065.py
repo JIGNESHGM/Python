@@ -21,3 +21,28 @@
 
 # Hints:
 # We can define recursive function in Python.
+
+# Function to compute f(n) using recursion
+def compute_f(n):
+    # Base case: if n is 0, return 1
+    if n == 0:
+        return 1
+    # Recursive case: f(n) = f(n-1) + 100
+    else:
+        return compute_f(n - 1) + 100
+    
+# Main function to test the compute_f function
+def main():
+    # Input n from the user
+    n = int(input("Enter a positive integer n: "))
+    
+    # Check if n is greater than 0
+    if n > 0:
+        result = compute_f(n)
+        print("f({}) = {}".format(n, result))
+    else:
+        print("Please enter a positive integer greater than 0.")
+        
+# Call the main function to execute the program
+if __name__ == "__main__":
+    main()
