@@ -1,3 +1,8 @@
-# This is Task_053.py
-# Python script created automatically
-print('Hello from task script!')
+# program 53 :
+
+# Define a class named Rectangle which can be
+# constructed by a length and width.
+# The Rectangle class has a method which can compute the area.
+
+# Hints:
+# Use def methodName(self) to define a method.

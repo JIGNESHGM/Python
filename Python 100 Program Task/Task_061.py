@@ -1,3 +1,6 @@
-# This is Task_061.py
-# Python script created automatically
-print('Hello from task script!')
+# program 61 :
+
+# Print a unicode string "hello world".
+
+# Hints:
+# Use u'strings' format to define unicode string.

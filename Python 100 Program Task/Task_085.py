@@ -1,3 +1,7 @@
-# This is Task_085.py
-# Python script created automatically
-print('Hello from task script!')
+# program 85:
+
+# Please write a program to shuffle
+# and print the list [3,6,7,8].
+
+# Hints:
+# Use shuffle() function to shuffle a list.

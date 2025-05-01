@@ -1,3 +1,6 @@
-# This is Task_051.py
-# Python script created automatically
-print('Hello from task script!')
+# program 51 :
+
+# Define a class named American and its subclass NewYorker.
+
+# Hints:
+# Use class Subclass(ParentClass) to define a subclass.

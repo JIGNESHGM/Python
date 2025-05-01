@@ -1,3 +1,7 @@
-# This is Task_074.py
-# Python script created automatically
-print('Hello from task script!')
+# program 74:
+
+# Please generate a random float where the
+# value is between 10 and 100 using Python math module.
+
+# Hints:
+# Use random.random() to generate a random float in [0,1].

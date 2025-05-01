@@ -1,3 +1,6 @@
-# This is Task_056.py
-# Python script created automatically
-print('Hello from task script!')
+# program 56 :
+
+# Write a function to compute 5/0 and use try/except to catch the exceptions.
+
+# Hints:
+# Use try/except to catch exceptions.

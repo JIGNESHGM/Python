@@ -1,3 +1,7 @@
-# This is Task_092.py
-# Python script created automatically
-print('Hello from task script!')
+# program 92:
+
+# By using list comprehension, please write a program to print the list
+# after removing the value 24 in [12,24,35,24,88,120,155].
+
+# Hints:
+# Use list's remove method to delete a value.

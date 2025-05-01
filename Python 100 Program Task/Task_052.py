@@ -1,3 +1,7 @@
-# This is Task_052.py
-# Python script created automatically
-print('Hello from task script!')
+# program 52 :
+
+# Define a class named Circle which can be constructed by a radius.
+# The Circle class has a method which can compute the area.
+
+# Hints:
+# Use def methodName(self) to define a method.

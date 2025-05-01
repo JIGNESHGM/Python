@@ -1,3 +1,7 @@
-# This is Task_075.py
-# Python script created automatically
-print('Hello from task script!')
+# program 75:
+
+# Please generate a random float where the
+# value is between 5 and 95 using Python math module.
+
+# Hints:
+# Use random.random() to generate a random float in [0,1].

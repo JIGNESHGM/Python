@@ -1,3 +1,6 @@
-# This is Task_099.py
-# Python script created automatically
-print('Hello from task script!')
+# program 99:
+
+# Please write a program which prints all permutations of [1,2,3]
+
+# Hints:
+# Use itertools.permutations() to get permutations of list.

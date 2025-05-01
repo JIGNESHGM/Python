@@ -1,3 +1,9 @@
-# This is Task_072.py
-# Python script created automatically
-print('Hello from task script!')
+# program 72:
+
+# Please write a binary search function which
+# searches an item in a sorted list.
+# The function should return
+# the index of element to be searched in the list.
+
+# Hints:
+# Use if/elif to deal with conditions.

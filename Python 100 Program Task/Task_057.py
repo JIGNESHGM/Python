@@ -1,3 +1,8 @@
-# This is Task_057.py
-# Python script created automatically
-print('Hello from task script!')
+# program 57 :
+
+
+# Define a custom exception class which takes a string message as attribute.
+
+# Hints:
+# To define a custom exception, we need to define a class inherited from
+# Exception.
