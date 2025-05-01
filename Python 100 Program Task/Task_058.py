@@ -19,3 +19,20 @@
 
 # Hints:
 # Use \w to match letters.
+
+# Function to extract the username from an email address
+def extract_username(email):
+    # Split the email address at the '@' symbol and return the first part
+    return email.split('@')[0]
+
+# Main function to test the extract_username function
+def main():
+    # Input email address from the user
+    email = input("Enter an email address (username@companyname.com): ")
+
+    username = extract_username(email)
+    print("Username:", username)
+    
+# Call the main function to execute the program
+if __name__ == "__main__":
+    main()
