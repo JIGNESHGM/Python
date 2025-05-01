@@ -15,3 +15,14 @@
 
 # Hints:
 # Use eval() to evaluate an expression.
+
+def main():
+    try:
+        expression = input("Enter a basic mathematical expression (e.g., 35+3): ")
+        result = eval(expression)
+        print("Result:", result)
+    except Exception as e:
+        print("Invalid expression. Error:", e)
+
+if __name__ == "__main__":
+    main()
