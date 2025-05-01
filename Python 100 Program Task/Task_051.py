@@ -4,3 +4,9 @@
 
 # Hints:
 # Use class Subclass(ParentClass) to define a subclass.
+
+class American:
+    pass
+
+class NewYorker(American):
+    ss
