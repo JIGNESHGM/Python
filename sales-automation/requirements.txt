@@ -1,0 +1,13 @@
+flask==2.0.1
+flask-wtf==1.0.0
+flask-mail==0.9.1
+flask-pymongo==2.3.0
+beautifulsoup4==4.9.3
+requests==2.25.1
+pandas==1.2.4
+openpyxl==3.0.7
+fake-useragent==0.1.11
+scikit-learn==0.24.1
+joblib==1.0.1
+python-dotenv==0.15.0
+dnspython==2.1.0
