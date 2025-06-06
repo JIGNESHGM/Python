@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Script Management</h2>
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#scraping-scripts" data-bs-toggle="tab">Scraping Scripts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#email-scripts" data-bs-toggle="tab">Email Scripts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#analytics-scripts" data-bs-toggle="tab">Analytics Scripts</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Scraping Scripts Tab -->
+                <div class="tab-pane fade show active" id="scraping-scripts">
+                    <h4>Web Scraping Configuration</h4>
+                    <form id="scraping-script-form">
+                        <div class="mb-3">
+                            <label for="scraping-source" class="form-label">Data Source</label>
+                            <select class="form-select" id="scraping-source">
+                                <option value="google">Google Search</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="custom">Custom Website</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="search-query" class="form-label">Search Query</label>
+                            <input type="text" class="form-control" id="search-query" placeholder="e.g., 'IT companies in New York'">
+                        </div>
+                        <div class="mb-3">
+                            <label for="max-results" class="form-label">Max Results</label>
+                            <input type="number" class="form-control" id="max-results" min="1" max="100" value="20">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Scraping Script</button>
+                    </form>
+                </div>
+
+                <!-- Email Scripts Tab -->
+                <div class="tab-pane fade" id="email-scripts">
+                    <h4>Email Campaign Scripts</h4>
+                    <form id="email-script-form">
+                        <div class="mb-3">
+                            <label for="email-template" class="form-label">Select Template</label>
+                            <select class="form-select" id="email-template">
+                                <option value="initial-contact">Initial Contact</option>
+                                <option value="follow-up">Follow Up</option>
+                                <option value="custom">Custom Template</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-subject" class="form-label">Email Subject</label>
+                            <input type="text" class="form-control" id="email-subject" placeholder="Subject line">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-body" class="form-label">Email Body</label>
+                            <textarea class="form-control" id="email-body" rows="6"></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="personalize">
+                            <label class="form-check-label" for="personalize">Enable Personalization</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Email Script</button>
+                    </form>
+                </div>
+
+                <!-- Analytics Scripts Tab -->
+                <div class="tab-pane fade" id="analytics-scripts">
+                    <h4>Analytics Configuration</h4>
+                    <form id="analytics-script-form">
+                        <div class="mb-3">
+                            <label class="form-label">Tracking Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="track-opens" checked>
+                                <label class="form-check-label" for="track-opens">Track Email Opens</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="track-clicks" checked>
+                                <label class="form-check-label" for="track-clicks">Track Link Clicks</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="track-responses">
+                                <label class="form-check-label" for="track-responses">Track Responses</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lead-scoring" class="form-label">Lead Scoring Algorithm</label>
+                            <select class="form-select" id="lead-scoring">
+                                <option value="basic">Basic Engagement</option>
+                                <option value="advanced" selected>Advanced AI Scoring</option>
+                                <option value="custom">Custom Rules</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Analytics Script</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Script Logs</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" id="script-logs">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Script Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Logs will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script>
+// Initialize tabs
+document.addEventListener('DOMContentLoaded', function() {
+    // Load saved scripts
+    loadScripts();
+    
+    // Form submission handlers
+    document.getElementById('scraping-script-form').addEventListener('submit', saveScrapingScript);
+    document.getElementById('email-script-form').addEventListener('submit', saveEmailScript);
+    document.getElementById('analytics-script-form').addEventListener('submit', saveAnalyticsScript);
+    
+    // Sample script logs - in production, this would come from an API
+    const sampleLogs = [
+        { timestamp: '2023-05-15 14:30', type: 'Scraping', status: 'Completed', action: 'View' },
+        { timestamp: '2023-05-15 10:15', type: 'Email', status: 'Failed', action: 'Retry' },
+        { timestamp: '2023-05-14 16:45', type: 'Analytics', status: 'Completed', action: 'View' }
+    ];
+    
+    populateScriptLogs(sampleLogs);
+});
+
+function loadScripts() {
+    // In a real application, this would fetch saved scripts from the server
+    console.log('Loading saved scripts...');
+}
+
+function saveScrapingScript(e) {
+    e.preventDefault();
+    const formData = {
+        source: document.getElementById('scraping-source').value,
+        query: document.getElementById('search-query').value,
+        maxResults: document.getElementById('max-results').value
+    };
+    console.log('Saving scraping script:', formData);
+    alert('Scraping script saved successfully!');
+}
+
+function saveEmailScript(e) {
+    e.preventDefault();
+    const formData = {
+        template: document.getElementById('email-template').value,
+        subject: document.getElementById('email-subject').value,
+        body: document.getElementById('email-body').value,
+        personalize: document.getElementById('personalize').checked
+    };
+    console.log('Saving email script:', formData);
+    alert('Email script saved successfully!');
+}
+
+function saveAnalyticsScript(e) {
+    e.preventDefault();
+    const formData = {
+        trackOpens: document.getElementById('track-opens').checked,
+        trackClicks: document.getElementById('track-clicks').checked,
+        trackResponses: document.getElementById('track-responses').checked,
+        scoringAlgorithm: document.getElementById('lead-scoring').value
+    };
+    console.log('Saving analytics script:', formData);
+    alert('Analytics script saved successfully!');
+}
+
+function populateScriptLogs(logs) {
+    const tbody = document.querySelector('#script-logs tbody');
+    tbody.innerHTML = '';
+    
+    logs.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${log.timestamp}</td>
+            <td>${log.type}</td>
+            <td><span class="badge ${getStatusClass(log.status)}">${log.status}</span></td>
+            <td><button class="btn btn-sm btn-outline-primary">${log.action}</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getStatusClass(status) {
+    switch(status.toLowerCase()) {
+        case 'completed': return 'bg-success';
+        case 'failed': return 'bg-danger';
+        case 'running': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+</script>
+{% endblock %}

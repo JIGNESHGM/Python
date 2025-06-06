@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Scripts{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="bi bi-code-slash"></i> JavaScript Files</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Size</th>
+                                <th>Last Modified</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>scripts.js</td>
+                                <td>5.2 KB</td>
+                                <td>2023-05-15</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>validation.js</td>
+                                <td>3.8 KB</td>
+                                <td>2023-05-10</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Add New Script</h5>
+                    <form>
+                        <div class="mb-3">
+                            <label for="scriptName" class="form-label">Script Name</label>
+                            <input type="text" class="form-control" id="scriptName" placeholder="e.g., custom.js">
+                        </div>
+                        <div class="mb-3">
+                            <label for="scriptContent" class="form-label">Script Content</label>
+                            <textarea class="form-control" id="scriptContent" rows="10"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Script
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

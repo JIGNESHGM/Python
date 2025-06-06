@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="display-4">Welcome to our Home Page</h2>
+        <p class="lead">This is the main content of the index page.</p>
+    </div>
+    <section>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0">Student Detail Form</h3>
+            </div>
+            <div class="card-body">
+                <form id="student-form" method="post" action="{% url 'add_student' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile" class="form-label">Mobile Number</label>
+                        <input type="text" class="form-control" id="mobile" name="mobile" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="roll" class="form-label">Roll Number</label>
+                        <input type="text" class="form-control" id="roll" name="roll" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="enrollment" class="form-label">Enrollment Number</label>
+                        <input type="text" class="form-control" id="enrollment" name="enrollment" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h3 class="mb-0">Student List</h3>
+            </div>
+            <ul class="list-group list-group-flush" id="student-list">
+                <!-- Student entries will appear here -->
+            </ul>
+        </div>
+    </section>
+</div>
+
+<script>
+function addStudent(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const mobile = document.getElementById('mobile').value;
+    const roll = document.getElementById('roll').value;
+    const enrollment = document.getElementById('enrollment').value;
+
+    const ul = document.getElementById('student-list');
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.innerHTML = `<strong>Name:</strong> ${name} | <strong>Email:</strong> ${email} | <strong>Mobile:</strong> ${mobile} | <strong>Roll:</strong> ${roll} | <strong>Enrollment:</strong> ${enrollment}`;
+    ul.appendChild(li);
+
+    document.getElementById('student-form').reset();
+}
+</script>
+{% endblock %}

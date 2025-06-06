@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Leads Management</h2>
+        <a href="{{ url_for('main.scrape') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Add New Leads
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-0">All Leads</h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search leads...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Industry</th>
+                            <th>Location</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                        <tr>
+                            <td>{{ lead.company_name }}</td>
+                            <td>{{ lead.contact_person or 'N/A' }}</td>
+                            <td>{{ lead.email or 'N/A' }}</td>
+                            <td>{{ lead.industry or 'N/A' }}</td>
+                            <td>{{ lead.location or 'N/A' }}</td>
+                            <td>{{ lead.source or 'Manual' }}</td>
+                            <td>
+                                {% if lead.get('campaigns') %}
+                                    {% set last_campaign = lead.campaigns[-1] %}
+                                    <span class="badge bg-{{ 'success' if last_campaign.lead_category == 'hot' else 'warning' if last_campaign.lead_category == 'warm' else 'secondary' }}">
+                                        {{ last_campaign.lead_category|title or 'New' }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">New</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="#" class="btn btn-outline-primary" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-success" title="Email">
+                                        <i class="bi bi-envelope"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any lead-specific JavaScript here
+    console.log('Leads page loaded');
+    
+    // Example: Confirm before deleting a lead
+    document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to delete this lead?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

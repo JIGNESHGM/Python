@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Campaign Analytics</h2>
+    
+    <div class="row">
+        <!-- Summary Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Leads</h5>
+                    <p class="card-text display-4">{{ stats.total_leads }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Emails Sent</h5>
+                    <p class="card-text display-4">{{ stats.sent }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Open Rate</h5>
+                    <p class="card-text display-4">{{ "%.1f"|format(stats.open_rate) }}%</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Response Rate</h5>
+                    <p class="card-text display-4">{{ "%.1f"|format(stats.response_rate) }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Lead Categories -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Lead Categories</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="leadCategoryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Campaign Performance -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Campaign Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="campaignPerformanceChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Analytics Table -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Campaign Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Status</th>
+                            <th>Opened</th>
+                            <th>Clicked</th>
+                            <th>Responded</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                        {% for campaign in lead.campaigns %}
+                        <tr>
+                            <td>{{ lead.company_name }}</td>
+                            <td>{{ lead.contact_person or 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if campaign.lead_category == 'hot' else 'warning' if campaign.lead_category == 'warm' else 'secondary' }}">
+                                    {{ campaign.lead_category|title }}
+                                </span>
+                            </td>
+                            <td>{{ 'Yes' if campaign.email_opened else 'No' }}</td>
+                            <td>{{ 'Yes' if campaign.link_clicked else 'No' }}</td>
+                            <td>{{ 'Yes' if campaign.response_received else 'No' }}</td>
+                            <td>{{ "%.1f"|format(campaign.lead_score * 100) }}%</td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Lead Category Chart
+    const leadCtx = document.getElementById('leadCategoryChart').getContext('2d');
+    new Chart(leadCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Hot Leads', 'Warm Leads', 'Cold Leads'],
+            datasets: [{
+                data: [{{ stats.hot }}, {{ stats.warm }}, {{ stats.cold }}],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#6c757d'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    // Campaign Performance Chart
+    const campaignCtx = document.getElementById('campaignPerformanceChart').getContext('2d');
+    new Chart(campaignCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Sent', 'Opened', 'Clicked', 'Responded'],
+            datasets: [{
+                label: 'Count',
+                data: [
+                    {{ stats.sent }},
+                    {{ stats.opened }},
+                    {{ stats.clicked }},
+                    {{ stats.responded }}
+                ],
+                backgroundColor: [
+                    '#007bff',
+                    '#17a2b8',
+                    '#6f42c1',
+                    '#20c997'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

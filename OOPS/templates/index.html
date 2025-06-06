@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="jumbotron mt-4">
+                <h1 class="display-4">Sales Automation System</h1>
+                <p class="lead">Automate your sales process with AI-powered lead generation and email campaigns</p>
+                <hr class="my-4">
+                <p>This system helps you:</p>
+                <ul>
+                    <li>Find leads from Google and LinkedIn</li>
+                    <li>Organize and manage your leads</li>
+                    <li>Run personalized email campaigns</li>
+                    <li>Track campaign performance with analytics</li>
+                </ul>
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Find Leads</h5>
+                                <p class="card-text">Scrape potential customers from Google and LinkedIn based on your ideal customer profile.</p>
+                                <a href="{{ url_for('main.scrape') }}" class="btn btn-primary">Scrape Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Manage Leads</h5>
+                                <p class="card-text">View and organize all your leads in one place with easy filtering options.</p>
+                                <a href="{{ url_for('main.leads') }}" class="btn btn-primary">View Leads</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Run Campaigns</h5>
+                                <p class="card-text">Create and send personalized email campaigns to your leads.</p>
+                                <a href="{{ url_for('main.campaign') }}" class="btn btn-primary">Start Campaign</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if stats %}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Quick Stats</h3>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Leads</h5>
+                            <p class="card-text display-4">{{ stats.total_leads }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Hot Leads</h5>
+                            <p class="card-text display-4">{{ stats.hot }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Warm Leads</h5>
+                            <p class="card-text display-4">{{ stats.warm }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-danger">
+                        <div class="card-body">
+                            <h5 class="card-title">Cold Leads</h5>
+                            <p class="card-text display-4">{{ stats.cold }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// You can add any JavaScript specific to the index page here
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Index page loaded');
+});
+</script>
+{% endblock %}

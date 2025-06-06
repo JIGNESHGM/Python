@@ -1,15 +1,127 @@
-<p>Hi {{ recipient_name }},</p>
+{% extends "base.html" %}
 
-<p>I noticed your company, {{ company_name }}, might benefit from our services...</p>
+{% block title %}Email Template{% endblock %}
 
-<p>We specialize in helping businesses like yours streamline their operations and increase revenue.</p>
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+{% endblock %}
 
-<p>Would you be open to a quick call next week to discuss how we might help?</p>
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="bi bi-envelope"></i> {{ 'Edit' if template else 'Create' }} Email Template</h3>
+                {% if template %}
+                <div>
+                    <a href="{{ url_for('main.preview_template', public_id=template.public_id) }}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-eye"></i> Preview
+                    </a>
+                    <a href="{{ url_for('main.test_template', public_id=template.public_id) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-send"></i> Test
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.edit_template', public_id=template.public_id) if template else url_for('main.create_template', public_id=campaign.public_id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control") }}
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.name.errors[0] }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label") }}
+                        {{ form.subject(class="form-control") }}
+                        {% if form.subject.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.subject.errors[0] }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            {{ form.is_html(class="form-check-input") }}
+                            {{ form.is_html.label(class="form-check-label") }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.body.label(class="form-label") }}
+                        <div id="email-editor">{{ form.body.data|safe if form.body.data }}</div>
+                        <textarea id="body" name="body" style="display:none;"></textarea>
+                        {% if form.body.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.body.errors[0] }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Available Placeholders</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-secondary">{first_name}</span>
+                            <span class="badge bg-secondary">{last_name}</span>
+                            <span class="badge bg-secondary">{full_name}</span>
+                            <span class="badge bg-secondary">{company}</span>
+                            <span class="badge bg-secondary">{position}</span>
+                            <span class="badge bg-secondary">{industry}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('main.campaign_templates', public_id=campaign.public_id) }}" class="btn btn-secondary me-md-2">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Template
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>Best regards,<br>
-Your Name<br>
-Your Company</p>
-
-<p><a href="{{ tracking_base_url }}/track/{{ tracking_token }}?cta=1">Learn more about our services</a></p>
-
-<img src="{{ tracking_base_url }}/track/{{ tracking_token }}?pixel=1" width="1" height="1" alt="">
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#email-editor').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onChange: function(contents) {
+                $('#body').val(contents);
+            },
+            onInit: function() {
+                $('#body').val($('#email-editor').summernote('code'));
+            }
+        }
+    });
+    
+    // Update hidden textarea before form submission
+    $('form').on('submit', function() {
+        $('#body').val($('#email-editor').summernote('code'));
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

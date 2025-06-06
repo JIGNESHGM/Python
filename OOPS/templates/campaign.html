@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Email Campaign</h2>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Create New Campaign</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('main.campaign') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label class="form-label">Select Leads</label>
+                    {{ form.leads(class="form-select", size="10") }}
+                    <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple leads</small>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Batch Size</label>
+                        {{ form.batch_size(class="form-control") }}
+                        <small class="form-text text-muted">Number of emails to send at once</small>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Delay Between Batches (seconds)</label>
+                        {{ form.delay(class="form-control") }}
+                        <small class="form-text text-muted">Prevents being flagged as spam</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email Template</label>
+                    <select class="form-select">
+                        <option>Initial Outreach</option>
+                        <option>Follow-Up</option>
+                        <option>Custom Template</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Preview</label>
+                    <div class="border p-3 bg-light">
+                        <h5>Subject: Partnership Opportunity for {{ '(Company Name)' }}</h5>
+                        <hr>
+                        <p>Hi {{ '(Contact Name)' }},</p>
+                        <p>I came across {{ '(Company Name)' }} and wanted to reach out about how we might work together...</p>
+                        <p>Would you be available for a quick call next week?</p>
+                        <p>Best regards,<br>Your Name</p>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Recent Campaigns</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Leads</th>
+                            <th>Status</th>
+                            <th>Open Rate</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-05-15</td>
+                            <td>24</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td>42%</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-05-10</td>
+                            <td>15</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td>38%</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

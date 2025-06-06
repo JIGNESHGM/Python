@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Scrape Data{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="bi bi-cloud-download"></i> Scrape Data</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.scrape') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="source" class="form-label">Data Source</label>
+                        <select class="form-select" id="source" name="source" required>
+                            <option value="">Select a source...</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="crunchbase">Crunchbase</option>
+                            <option value="google">Google Search</option>
+                            <option value="yellowpages">Yellow Pages</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="query" class="form-label">Search Query</label>
+                        <input type="text" class="form-control" id="query" name="query" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="max_results" class="form-label">Max Results</label>
+                            <input type="number" class="form-control" id="max_results" name="max_results" value="50" min="1" max="1000">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="industry" class="form-label">Industry</label>
+                        <input type="text" class="form-control" id="industry" name="industry">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-cloud-download"></i> Start Scraping
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if results %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Scraping Results ({{ results|length }} found)</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Company</th>
+                                <th>Position</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td>{{ result.name }}</td>
+                                <td>{{ result.company }}</td>
+                                <td>{{ result.position }}</td>
+                                <td>{{ result.email }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-plus-circle"></i> Add Lead
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                    <button class="btn btn-success me-md-2">
+                        <i class="bi bi-save"></i> Save All to Leads
+                    </button>
+                    <button class="btn btn-outline-secondary">
+                        <i class="bi bi-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

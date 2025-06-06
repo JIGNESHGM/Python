@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Campaigns{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-megaphone"></i> Campaigns</h1>
+    <a href="{{ url_for('main.create_campaign') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Campaign
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-9">
+                <input type="text" name="q" class="form-control" placeholder="Search campaigns..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+                    {% for status in campaign_statuses %}
+                    <option value="{{ status.value }}" {% if status_filter == status.value %}selected{% endif %}>{{ status.value|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for campaign in campaigns %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ campaign.name }}</h5>
+                <span class="badge bg-{{ 'success' if campaign.status.value == 'active' else 'warning' if campaign.status.value == 'paused' else 'secondary' }}">
+                    {{ campaign.status.value|title }}
+                </span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ campaign.description|truncate(100) }}</p>
+                <div class="mb-3">
+                    <small class="text-muted">Leads: {{ campaign.leads.count() }}</small>
+                </div>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ campaign.analytics.open_rate }}%" 
+                        aria-valuenow="{{ campaign.analytics.open_rate }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ campaign.analytics.open_rate }}% Open
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: {{ campaign.analytics.click_rate }}%" 
+                        aria-valuenow="{{ campaign.analytics.click_rate }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ campaign.analytics.click_rate }}% Click
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('main.campaign_detail', public_id=campaign.public_id) }}" class="btn btn-sm btn-outline-primary">
+                        View
+                    </a>
+                    <small class="text-muted">
+                        {{ campaign.start_date|datetimeformat('%b %d') }} - {{ campaign.end_date|datetimeformat('%b %d') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">No campaigns found</h5>
+                <p class="card-text">Create your first campaign to get started</p>
+                <a href="{{ url_for('main.create_campaign') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create Campaign
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="bi bi-graph-up"></i> Analytics</h1>
+        <p class="text-muted">Track your sales performance and campaign metrics</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Leads</h5>
+                <h2 class="card-text">{{ total_leads }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Active Campaigns</h5>
+                <h2 class="card-text">{{ total_campaigns }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Emails Sent</h5>
+                <h2 class="card-text">{{ total_emails_sent }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Avg. Open Rate</h5>
+                <h2 class="card-text">{{ avg_open_rate }}%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Lead Sources</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="leadSourceChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Lead Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="leadStatusChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Email Performance by Campaign</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="campaignPerformanceChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Lead Source Chart
+    const leadSourceCtx = document.getElementById('leadSourceChart').getContext('2d');
+    const leadSourceChart = new Chart(leadSourceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ lead_sources_labels|tojson }},
+            datasets: [{
+                data: {{ lead_sources_data|tojson }},
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ]
+            }]
+        }
+    });
+
+    // Lead Status Chart
+    const leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
+    const leadStatusChart = new Chart(leadStatusCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ lead_status_labels|tojson }},
+            datasets: [{
+                data: {{ lead_status_data|tojson }},
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ]
+            }]
+        }
+    });
+
+    // Campaign Performance Chart
+    const campaignPerfCtx = document.getElementById('campaignPerformanceChart').getContext('2d');
+    const campaignPerfChart = new Chart(campaignPerfCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ campaign_names|tojson }},
+            datasets: [
+                {
+                    label: 'Open Rate',
+                    data: {{ open_rates|tojson }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Click Rate',
+                    data: {{ click_rates|tojson }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Reply Rate',
+                    data: {{ reply_rates|tojson }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
