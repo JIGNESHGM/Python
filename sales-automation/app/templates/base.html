@@ -34,6 +34,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint.startswith('appointments.') %}active{% endif %}" href="{{ url_for('appointments.index') }}">
+                            <i class="bi bi-calendar-check"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'main.analytics' %}active{% endif %}" href="{{ url_for('main.analytics') }}">
                             <i class="bi bi-graph-up"></i> Analytics
                         </a>

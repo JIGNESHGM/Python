@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Reschedule Appointment{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-alt"></i> Reschedule Appointment
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Current Appointment Info -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Current Appointment Details</h6>
+                        <strong>{{ appointment.title }}</strong><br>
+                        Client: {{ appointment.client_name }}<br>
+                        Current Date: {{ appointment.scheduled_date.strftime('%Y-%m-%d at %H:%M') }} ({{ appointment.timezone }})<br>
+                        Duration: {{ appointment.duration_minutes }} minutes
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('appointments.reschedule', public_id=appointment.public_id) }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <h5 class="mb-3">New Schedule Details</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    {{ form.new_scheduled_date.label(class="form-label") }}
+                                    {{ form.new_scheduled_date(class="form-control") }}
+                                    {% for error in form.new_scheduled_date.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.new_duration_minutes.label(class="form-label") }}
+                                    {{ form.new_duration_minutes(class="form-control") }}
+                                    {% for error in form.new_duration_minutes.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.reason.label(class="form-label") }}
+                            {{ form.reason(class="form-control", rows="3", placeholder="Please provide a reason for rescheduling...") }}
+                            {% for error in form.reason.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                {{ form.send_notification(class="form-check-input") }}
+                                {{ form.send_notification.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a href="{{ url_for('appointments.view', public_id=appointment.public_id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Cancel
+                                    </a>
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fas fa-calendar-alt"></i> Reschedule Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Set minimum date to current time
+    var now = new Date();
+    var minDateTime = now.toISOString().slice(0, 16);
+    $('#new_scheduled_date').attr('min', minDateTime);
+    
+    // Warning for past dates
+    $('#new_scheduled_date').on('change', function() {
+        var selectedDate = new Date($(this).val());
+        if (selectedDate < now) {
+            alert('Warning: You are scheduling an appointment in the past.');
+        }
+    });
+});
+</script>
+{% endblock %}

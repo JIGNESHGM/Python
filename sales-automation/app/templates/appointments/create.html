@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Create Appointment{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-plus"></i> Create New Appointment
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('appointments.create') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Basic Information -->
+                        <h5 class="mb-3">Appointment Details</h5>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    {{ form.title.label(class="form-label") }}
+                                    {{ form.title(class="form-control") }}
+                                    {% for error in form.title.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.appointment_type.label(class="form-label") }}
+                                    {{ form.appointment_type(class="form-control") }}
+                                    {% for error in form.appointment_type.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows="3") }}
+                            {% for error in form.description.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Date and Time -->
+                        <h5 class="mb-3 mt-4">Schedule</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.scheduled_date.label(class="form-label") }}
+                                    {{ form.scheduled_date(class="form-control") }}
+                                    {% for error in form.scheduled_date.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {{ form.duration_minutes.label(class="form-label") }}
+                                    {{ form.duration_minutes(class="form-control") }}
+                                    {% for error in form.duration_minutes.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {{ form.timezone.label(class="form-label") }}
+                                    {{ form.timezone(class="form-control") }}
+                                    {% for error in form.timezone.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Client Information -->
+                        <h5 class="mb-3 mt-4">Client Information</h5>
+                        {% if lead %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            Pre-filling with lead information for {{ lead.first_name }} {{ lead.last_name }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.client_name.label(class="form-label") }}
+                                    {{ form.client_name(class="form-control") }}
+                                    {% for error in form.client_name.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.client_email.label(class="form-label") }}
+                                    {{ form.client_email(class="form-control") }}
+                                    {% for error in form.client_email.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.client_phone.label(class="form-label") }}
+                                    {{ form.client_phone(class="form-control") }}
+                                    {% for error in form.client_phone.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.client_company.label(class="form-label") }}
+                                    {{ form.client_company(class="form-control") }}
+                                    {% for error in form.client_company.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Meeting Details -->
+                        <h5 class="mb-3 mt-4">Meeting Details</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.meeting_location.label(class="form-label") }}
+                                    {{ form.meeting_location(class="form-control", placeholder="Office address or venue") }}
+                                    {% for error in form.meeting_location.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.meeting_link.label(class="form-label") }}
+                                    {{ form.meeting_link(class="form-control", placeholder="https://zoom.us/j/123456789") }}
+                                    {% for error in form.meeting_link.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.notes.label(class="form-label") }}
+                            {{ form.notes(class="form-control", rows="4", placeholder="Any additional notes or agenda items...") }}
+                            {% for error in form.notes.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="form-group mt-4">
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('appointments.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Appointments
+                                </a>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Create Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Set minimum date to today
+    var today = new Date();
+    var todayString = today.toISOString().slice(0, 16);
+    $('#scheduled_date').attr('min', todayString);
+    
+    // Update timezone based on browser timezone
+    var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var timezoneSelect = $('#timezone');
+    var currentValue = timezoneSelect.val();
+    
+    // If no timezone is selected and user timezone is available in options
+    if (!currentValue && userTimezone) {
+        timezoneSelect.find('option').each(function() {
+            if ($(this).val() === userTimezone) {
+                $(this).prop('selected', true);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

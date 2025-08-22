@@ -1,0 +1,569 @@
+{
+  "name": "Appointment Booking System Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Daily Export Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_BASE_URL}}/api/appointments/export/daily",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Trigger Daily Export",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_BASE_URL}}/api/appointments/old",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get Old Appointments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.appointments.length}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Check if Appointments Exist",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_BASE_URL}}/api/appointments/export/excel",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{JSON.stringify($json.appointments)}}",
+        "options": {}
+      },
+      "name": "Generate Excel Export",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.MAIL_USERNAME}}",
+        "toEmail": "{{$env.ADMIN_EMAIL}}",
+        "subject": "Daily Appointment Export - {{$now.format('YYYY-MM-DD')}}",
+        "text": "Please find attached the daily appointment export.\n\nTotal appointments: {{$json.appointments.length}}\nGenerated at: {{$now.format('YYYY-MM-DD HH:mm:ss')}}\n\nBest regards,\nAppointment System",
+        "attachments": "data",
+        "options": {
+          "attachmentsPropertyName": "excel_data"
+        }
+      },
+      "name": "Send Export Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        200
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$env.GOOGLE_SHEETS_WEBHOOK_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{JSON.stringify({\n  \"action\": \"append_rows\",\n  \"spreadsheet_id\": $env.GOOGLE_SHEETS_ID,\n  \"sheet_name\": \"Appointments\",\n  \"data\": $json.appointments\n})}}",
+        "options": {}
+      },
+      "name": "Update Google Sheets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1340,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */6 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Reminder Check Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_BASE_URL}}/api/appointments/upcoming",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get Upcoming Appointments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        460,
+        600
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Filter appointments that need reminders (24 hours before)\nconst now = new Date();\nconst twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);\n\nconst appointmentsNeedingReminders = items[0].json.appointments.filter(appointment => {\n  const appointmentDate = new Date(appointment.scheduled_date);\n  const timeDiff = appointmentDate.getTime() - now.getTime();\n  const hoursDiff = timeDiff / (1000 * 60 * 60);\n  \n  // Send reminder if appointment is in 20-28 hours and reminder not sent\n  return hoursDiff >= 20 && hoursDiff <= 28 && !appointment.reminder_sent;\n});\n\nreturn appointmentsNeedingReminders.map(appointment => ({ json: appointment }));"
+      },
+      "name": "Filter Appointments for Reminders",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.length}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Check if Reminders Needed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_BASE_URL}}/api/appointments/{{$json.public_id}}/reminder",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={}",
+        "options": {}
+      },
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        500
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "triggerOn": "webhookReceived",
+        "httpMethod": "POST",
+        "path": "appointment-webhook"
+      },
+      "name": "Appointment Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        900
+      ],
+      "webhookId": "appointment-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.action}}",
+              "value2": "appointment_created"
+            }
+          ]
+        }
+      },
+      "name": "Check Action Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        460,
+        900
+      ],
+      "parameters": {
+        "options": {
+          "fallbackOutput": 3
+        },
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.action}}",
+              "value2": "appointment_created"
+            },
+            {
+              "value1": "={{$json.body.action}}",
+              "value2": "appointment_updated"
+            },
+            {
+              "value1": "={{$json.body.action}}",
+              "value2": "appointment_cancelled"
+            },
+            {
+              "value1": "={{$json.body.action}}",
+              "value2": "appointment_rescheduled"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.MAIL_USERNAME}}",
+        "toEmail": "={{$json.body.appointment.client_email}}",
+        "subject": "Appointment Confirmation - {{$json.body.appointment.title}}",
+        "text": "Dear {{$json.body.appointment.client_name}},\n\nYour appointment has been confirmed:\n\nTitle: {{$json.body.appointment.title}}\nDate & Time: {{$json.body.appointment.scheduled_date}}\nDuration: {{$json.body.appointment.duration_minutes}} minutes\n\nWe look forward to meeting with you!\n\nBest regards,\nAppointment System"
+      },
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        680,
+        800
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.MAIL_USERNAME}}",
+        "toEmail": "={{$json.body.appointment.client_email}}",
+        "subject": "Appointment Updated - {{$json.body.appointment.title}}",
+        "text": "Dear {{$json.body.appointment.client_name}},\n\nYour appointment has been updated:\n\nTitle: {{$json.body.appointment.title}}\nDate & Time: {{$json.body.appointment.scheduled_date}}\nStatus: {{$json.body.appointment.status}}\n\nBest regards,\nAppointment System"
+      },
+      "name": "Send Update Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        680,
+        920
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.MAIL_USERNAME}}",
+        "toEmail": "={{$json.body.appointment.client_email}}",
+        "subject": "Appointment Cancelled - {{$json.body.appointment.title}}",
+        "text": "Dear {{$json.body.appointment.client_name}},\n\nYour appointment has been cancelled:\n\nTitle: {{$json.body.appointment.title}}\nOriginal Date & Time: {{$json.body.appointment.scheduled_date}}\nReason: {{$json.body.reason}}\n\nPlease contact us to reschedule if needed.\n\nBest regards,\nAppointment System"
+      },
+      "name": "Send Cancellation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        680,
+        1040
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.MAIL_USERNAME}}",
+        "toEmail": "={{$json.body.appointment.client_email}}",
+        "subject": "Appointment Rescheduled - {{$json.body.appointment.title}}",
+        "text": "Dear {{$json.body.appointment.client_name}},\n\nYour appointment has been rescheduled:\n\nTitle: {{$json.body.appointment.title}}\nNew Date & Time: {{$json.body.appointment.scheduled_date}}\nReason: {{$json.body.reason}}\n\nBest regards,\nAppointment System"
+      },
+      "name": "Send Reschedule Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        680,
+        1160
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$env.SLACK_WEBHOOK_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"New appointment: {{$json.body.appointment.title}} with {{$json.body.appointment.client_name}} on {{$json.body.appointment.scheduled_date}}\",\n  \"channel\": \"#appointments\"\n}",
+        "options": {}
+      },
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        900,
+        900
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Export Schedule": {
+      "main": [
+        [
+          {
+            "node": "Trigger Daily Export",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Daily Export": {
+      "main": [
+        [
+          {
+            "node": "Get Old Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Old Appointments": {
+      "main": [
+        [
+          {
+            "node": "Check if Appointments Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Appointments Exist": {
+      "main": [
+        [
+          {
+            "node": "Generate Excel Export",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Excel Export": {
+      "main": [
+        [
+          {
+            "node": "Send Export Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reminder Check Schedule": {
+      "main": [
+        [
+          {
+            "node": "Get Upcoming Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Upcoming Appointments": {
+      "main": [
+        [
+          {
+            "node": "Filter Appointments for Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Appointments for Reminders": {
+      "main": [
+        [
+          {
+            "node": "Check if Reminders Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Reminders Needed": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appointment Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Action Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Action Type": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Update Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Cancellation Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reschedule Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

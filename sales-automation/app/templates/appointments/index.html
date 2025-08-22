@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Appointments Dashboard</h1>
+                <div>
+                    <a href="{{ url_for('appointments.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Appointment
+                    </a>
+                    <a href="{{ url_for('appointments.export') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-download"></i> Export
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">Total Appointments</h5>
+                                    <h2 class="mb-0">{{ stats.total }}</h2>
+                                </div>
+                                <div class="text-primary-50">
+                                    <i class="fas fa-calendar-alt fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">Upcoming</h5>
+                                    <h2 class="mb-0">{{ stats.upcoming }}</h2>
+                                </div>
+                                <div class="text-success-50">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">Today</h5>
+                                    <h2 class="mb-0">{{ stats.today }}</h2>
+                                </div>
+                                <div class="text-warning-50">
+                                    <i class="fas fa-calendar-day fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">Completed</h5>
+                                    <h2 class="mb-0">{{ stats.completed }}</h2>
+                                </div>
+                                <div class="text-info-50">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                            <i class="fas fa-filter"></i> Filters
+                        </button>
+                    </h5>
+                </div>
+                <div class="collapse" id="filtersCollapse">
+                    <div class="card-body">
+                        <form method="GET" action="{{ url_for('appointments.index') }}">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="search">Search</label>
+                                        <input type="text" class="form-control" id="search" name="search" 
+                                               value="{{ request.args.get('search', '') }}" 
+                                               placeholder="Search appointments...">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="status">Status</label>
+                                        <select class="form-control" id="status" name="status">
+                                            <option value="">All Statuses</option>
+                                            <option value="scheduled" {% if request.args.get('status') == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                                            <option value="confirmed" {% if request.args.get('status') == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                            <option value="completed" {% if request.args.get('status') == 'completed' %}selected{% endif %}>Completed</option>
+                                            <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            <option value="no_show" {% if request.args.get('status') == 'no_show' %}selected{% endif %}>No Show</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="type">Type</label>
+                                        <select class="form-control" id="type" name="type">
+                                            <option value="">All Types</option>
+                                            <option value="consultation" {% if request.args.get('type') == 'consultation' %}selected{% endif %}>Consultation</option>
+                                            <option value="meeting" {% if request.args.get('type') == 'meeting' %}selected{% endif %}>Meeting</option>
+                                            <option value="demo" {% if request.args.get('type') == 'demo' %}selected{% endif %}>Demo</option>
+                                            <option value="follow_up" {% if request.args.get('type') == 'follow_up' %}selected{% endif %}>Follow Up</option>
+                                            <option value="sales_call" {% if request.args.get('type') == 'sales_call' %}selected{% endif %}>Sales Call</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="date_from">From Date</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" 
+                                               value="{{ request.args.get('date_from', '') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="date_to">To Date</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to" 
+                                               value="{{ request.args.get('date_to', '') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="submit" class="btn btn-primary btn-block">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Appointments Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Appointments</h5>
+                </div>
+                <div class="card-body">
+                    {% if appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Client</th>
+                                    <th>Date & Time</th>
+                                    <th>Duration</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('appointments.view', public_id=appointment.public_id) }}">
+                                            {{ appointment.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ appointment.client_name }}</strong>
+                                            {% if appointment.client_company %}
+                                            <br><small class="text-muted">{{ appointment.client_company }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ appointment.scheduled_date.strftime('%Y-%m-%d') }}<br>
+                                        <small class="text-muted">{{ appointment.scheduled_date.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>{{ appointment.duration_minutes }} min</td>
+                                    <td>
+                                        <span class="badge badge-secondary">
+                                            {{ appointment.appointment_type.value.replace('_', ' ').title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if appointment.status.value == 'scheduled' %}
+                                        <span class="badge badge-primary">Scheduled</span>
+                                        {% elif appointment.status.value == 'confirmed' %}
+                                        <span class="badge badge-success">Confirmed</span>
+                                        {% elif appointment.status.value == 'completed' %}
+                                        <span class="badge badge-info">Completed</span>
+                                        {% elif appointment.status.value == 'cancelled' %}
+                                        <span class="badge badge-danger">Cancelled</span>
+                                        {% elif appointment.status.value == 'no_show' %}
+                                        <span class="badge badge-warning">No Show</span>
+                                        {% elif appointment.status.value == 'rescheduled' %}
+                                        <span class="badge badge-warning">Rescheduled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('appointments.view', public_id=appointment.public_id) }}" 
+                                               class="btn btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if appointment.status.value not in ['cancelled', 'completed'] %}
+                                            <a href="{{ url_for('appointments.update', public_id=appointment.public_id) }}" 
+                                               class="btn btn-outline-secondary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ url_for('appointments.reschedule', public_id=appointment.public_id) }}" 
+                                               class="btn btn-outline-warning" title="Reschedule">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </a>
+                                            <a href="{{ url_for('appointments.cancel', public_id=appointment.public_id) }}" 
+                                               class="btn btn-outline-danger" title="Cancel">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No appointments found</h5>
+                        <p class="text-muted">Create your first appointment to get started.</p>
+                        <a href="{{ url_for('appointments.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Appointment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Initialize any JavaScript components here
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

@@ -49,6 +49,16 @@ def create_app(config_name='default'):
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
     
+    from .routes_appointments import appointments as appointments_blueprint
+    app.register_blueprint(appointments_blueprint)
+    
+    from .api_endpoints import api as api_blueprint
+    app.register_blueprint(api_blueprint)
+    
+    # Initialize appointment automation
+    from .utils.appointment_automation import init_automation
+    init_automation(app)
+    
     # Error handlers
     register_error_handlers(app)
     

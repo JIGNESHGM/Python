@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}{{ appointment.title }} - Appointment Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Appointment Details Card -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-alt"></i> {{ appointment.title }}
+                    </h4>
+                    <span class="badge badge-lg {% if appointment.status.value == 'scheduled' %}badge-primary{% elif appointment.status.value == 'confirmed' %}badge-success{% elif appointment.status.value == 'completed' %}badge-info{% elif appointment.status.value == 'cancelled' %}badge-danger{% elif appointment.status.value == 'no_show' %}badge-warning{% elif appointment.status.value == 'rescheduled' %}badge-warning{% endif %}">
+                        {{ appointment.status.value.replace('_', ' ').title() }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Date & Time</h6>
+                            <p class="lead">
+                                <i class="fas fa-calendar"></i> {{ appointment.scheduled_date.strftime('%A, %B %d, %Y') }}<br>
+                                <i class="fas fa-clock"></i> {{ appointment.scheduled_date.strftime('%I:%M %p') }} ({{ appointment.timezone }})
+                            </p>
+                            
+                            <h6>Duration</h6>
+                            <p><i class="fas fa-stopwatch"></i> {{ appointment.duration_minutes }} minutes</p>
+                            
+                            <h6>Type</h6>
+                            <p>
+                                <span class="badge badge-secondary">
+                                    {{ appointment.appointment_type.value.replace('_', ' ').title() }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Client Information</h6>
+                            <div class="client-info">
+                                <p><strong><i class="fas fa-user"></i> {{ appointment.client_name }}</strong></p>
+                                <p><i class="fas fa-envelope"></i> <a href="mailto:{{ appointment.client_email }}">{{ appointment.client_email }}</a></p>
+                                {% if appointment.client_phone %}
+                                <p><i class="fas fa-phone"></i> <a href="tel:{{ appointment.client_phone }}">{{ appointment.client_phone }}</a></p>
+                                {% endif %}
+                                {% if appointment.client_company %}
+                                <p><i class="fas fa-building"></i> {{ appointment.client_company }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if appointment.description %}
+                    <div class="mt-3">
+                        <h6>Description</h6>
+                        <p>{{ appointment.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if appointment.meeting_location or appointment.meeting_link %}
+                    <div class="mt-3">
+                        <h6>Meeting Details</h6>
+                        {% if appointment.meeting_location %}
+                        <p><i class="fas fa-map-marker-alt"></i> {{ appointment.meeting_location }}</p>
+                        {% endif %}
+                        {% if appointment.meeting_link %}
+                        <p><i class="fas fa-video"></i> <a href="{{ appointment.meeting_link }}" target="_blank">{{ appointment.meeting_link }}</a></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if appointment.notes %}
+                    <div class="mt-3">
+                        <h6>Notes</h6>
+                        <div class="alert alert-light">
+                            {{ appointment.notes }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted">
+                            <small>
+                                Created: {{ appointment.created_at.strftime('%Y-%m-%d %H:%M') }}<br>
+                                Last updated: {{ appointment.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                            </small>
+                        </div>
+                        <div>
+                            {% if appointment.status.value not in ['cancelled', 'completed'] %}
+                            <a href="{{ url_for('appointments.update', public_id=appointment.public_id) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{{ url_for('appointments.reschedule', public_id=appointment.public_id) }}" 
+                               class="btn btn-outline-warning">
+                                <i class="fas fa-calendar-alt"></i> Reschedule
+                            </a>
+                            <a href="{{ url_for('appointments.cancel', public_id=appointment.public_id) }}" 
+                               class="btn btn-outline-danger">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Quick Actions Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="mailto:{{ appointment.client_email }}?subject=Regarding your appointment: {{ appointment.title }}" 
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-envelope"></i> Send Email
+                        </a>
+                        {% if appointment.client_phone %}
+                        <a href="tel:{{ appointment.client_phone }}" 
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-phone"></i> Call Client
+                        </a>
+                        {% endif %}
+                        {% if appointment.meeting_link %}
+                        <a href="{{ appointment.meeting_link }}" target="_blank"
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-video"></i> Join Meeting
+                        </a>
+                        {% endif %}
+                        {% if appointment.lead %}
+                        <a href="{{ url_for('main.lead_detail', public_id=appointment.lead.public_id) }}" 
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-user-circle"></i> View Lead Profile
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Appointment History</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if history %}
+                    <div class="timeline">
+                        {% for record in history %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if record.action.value == 'created' %}
+                                <i class="fas fa-plus text-success"></i>
+                                {% elif record.action.value == 'updated' %}
+                                <i class="fas fa-edit text-info"></i>
+                                {% elif record.action.value == 'rescheduled' %}
+                                <i class="fas fa-calendar-alt text-warning"></i>
+                                {% elif record.action.value == 'cancelled' %}
+                                <i class="fas fa-times text-danger"></i>
+                                {% elif record.action.value == 'confirmed' %}
+                                <i class="fas fa-check text-success"></i>
+                                {% elif record.action.value == 'completed' %}
+                                <i class="fas fa-check-circle text-info"></i>
+                                {% elif record.action.value == 'email_sent' %}
+                                <i class="fas fa-envelope text-primary"></i>
+                                {% elif record.action.value == 'reminder_sent' %}
+                                <i class="fas fa-bell text-warning"></i>
+                                {% else %}
+                                <i class="fas fa-circle text-muted"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <strong>{{ record.action.value.replace('_', ' ').title() }}</strong>
+                                    <small class="text-muted float-right">
+                                        {{ record.created_at.strftime('%m/%d %H:%M') }}
+                                    </small>
+                                </div>
+                                <div class="timeline-body">
+                                    {{ record.details }}
+                                    {% if record.user %}
+                                    <br><small class="text-muted">by {{ record.user.username }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No history available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back Button -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <a href="{{ url_for('appointments.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Appointments
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.badge-lg {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.client-info p {
+    margin-bottom: 0.5rem;
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 3rem;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 2rem;
+    height: calc(100% - 1rem);
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.25rem;
+    width: 2rem;
+    height: 2rem;
+    background-color: white;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-content {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    border-left: 3px solid #007bff;
+}
+
+.timeline-header {
+    margin-bottom: 0.5rem;
+}
+
+.timeline-body {
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Auto-refresh reminder status every 5 minutes
+    setInterval(function() {
+        // Check if reminder should be sent
+        var appointmentDate = new Date('{{ appointment.scheduled_date.isoformat() }}');
+        var now = new Date();
+        var timeDiff = appointmentDate.getTime() - now.getTime();
+        var hoursDiff = timeDiff / (1000 * 60 * 60);
+        
+        if (hoursDiff <= 24 && hoursDiff > 0 && !{{ appointment.reminder_sent|tojson }}) {
+            $('#reminder-status').html('<span class="badge badge-warning">Reminder Due</span>');
+        }
+    }, 5 * 60 * 1000);
+});
+</script>
+{% endblock %}

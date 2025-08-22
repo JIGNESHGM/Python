@@ -207,6 +207,120 @@ class CampaignAnalytics(db.Model):
     def __repr__(self):
         return f'<CampaignAnalytics for campaign {self.campaign_id}>'
 
+# Appointment System Models
+class AppointmentStatus(enum.Enum):
+    SCHEDULED = 'scheduled'
+    CONFIRMED = 'confirmed'
+    CANCELLED = 'cancelled'
+    COMPLETED = 'completed'
+    NO_SHOW = 'no_show'
+    RESCHEDULED = 'rescheduled'
+
+class AppointmentType(enum.Enum):
+    CONSULTATION = 'consultation'
+    MEETING = 'meeting'
+    DEMO = 'demo'
+    FOLLOW_UP = 'follow_up'
+    SALES_CALL = 'sales_call'
+    SUPPORT = 'support'
+
+class Appointment(db.Model):
+    __tablename__ = 'appointments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String(36), unique=True, default=lambda: str(uuid.uuid4()))
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    appointment_type = db.Column(db.Enum(AppointmentType), default=AppointmentType.CONSULTATION)
+    status = db.Column(db.Enum(AppointmentStatus), default=AppointmentStatus.SCHEDULED)
+    
+    # Date and time fields
+    scheduled_date = db.Column(db.DateTime, nullable=False)
+    duration_minutes = db.Column(db.Integer, default=60)
+    timezone = db.Column(db.String(50), default='UTC')
+    
+    # Contact information
+    client_name = db.Column(db.String(120), nullable=False)
+    client_email = db.Column(db.String(120), nullable=False)
+    client_phone = db.Column(db.String(20))
+    client_company = db.Column(db.String(120))
+    
+    # Meeting details
+    meeting_location = db.Column(db.String(256))
+    meeting_link = db.Column(db.String(512))
+    notes = db.Column(db.Text)
+    
+    # Tracking fields
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    reminder_sent = db.Column(db.Boolean, default=False)
+    confirmation_sent = db.Column(db.Boolean, default=False)
+    
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    lead_id = db.Column(db.Integer, db.ForeignKey('leads.id'), nullable=True)
+    
+    # Relationships
+    creator = db.relationship('User', backref=db.backref('appointments', lazy='dynamic'))
+    lead = db.relationship('Lead', backref=db.backref('appointments', lazy='dynamic'))
+    history = db.relationship('AppointmentHistory', backref='appointment', lazy='dynamic', cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<Appointment {self.title} - {self.client_name}>'
+    
+    def to_dict(self):
+        """Convert appointment to dictionary for API responses"""
+        return {
+            'id': self.public_id,
+            'title': self.title,
+            'description': self.description,
+            'type': self.appointment_type.value,
+            'status': self.status.value,
+            'scheduled_date': self.scheduled_date.isoformat(),
+            'duration_minutes': self.duration_minutes,
+            'timezone': self.timezone,
+            'client_name': self.client_name,
+            'client_email': self.client_email,
+            'client_phone': self.client_phone,
+            'client_company': self.client_company,
+            'meeting_location': self.meeting_location,
+            'meeting_link': self.meeting_link,
+            'notes': self.notes,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
+class AppointmentHistoryAction(enum.Enum):
+    CREATED = 'created'
+    UPDATED = 'updated'
+    RESCHEDULED = 'rescheduled'
+    CANCELLED = 'cancelled'
+    CONFIRMED = 'confirmed'
+    COMPLETED = 'completed'
+    NO_SHOW = 'no_show'
+    REMINDER_SENT = 'reminder_sent'
+    EMAIL_SENT = 'email_sent'
+
+class AppointmentHistory(db.Model):
+    __tablename__ = 'appointment_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    action = db.Column(db.Enum(AppointmentHistoryAction), nullable=False)
+    details = db.Column(db.Text)
+    old_values = db.Column(db.Text)  # JSON string of old values
+    new_values = db.Column(db.Text)  # JSON string of new values
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Foreign keys
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    # Relationships
+    user = db.relationship('User', backref=db.backref('appointment_actions', lazy='dynamic'))
+    
+    def __repr__(self):
+        return f'<AppointmentHistory {self.action.value} - {self.created_at}>'
+
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(int(id))
